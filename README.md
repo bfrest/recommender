@@ -1,1 +1,1 @@
-Music recomender based on spotify data
+Music finder based on spotify data
