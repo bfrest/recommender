@@ -94,19 +94,34 @@ function App() {
     fetchData();
   }, []);
 
-  //! this could be the thing that makes using the app cool Af.
+  //! this could probably use revision
   const checkAlreadySaved = async (trackList) => {
     let idList = [];
+    let copyOfTrackList = [...trackList];
     let isSaved = [];
-    let newTrackList = {};
+    let inLibrary = {};
+    let newSongs = [];
     // get all the ids to make single call to see if any items in the list are saved in the users library
     trackList.map((track) => idList.push(track.id));
     //makes call to get an array true false values that will match trackList
     await axios.get(`/me/tracks/contains?ids=${idList}`).then((res) => (isSaved = [...res.data]));
     // adds the inLibrary key to trackList items
-    idList.forEach((key, i) => (newTrackList[key] = isSaved[i]));
+    idList.forEach((key, i) => (inLibrary[key] = isSaved[i]));
+    // loop through the songs, drop ones that are in users library
+    // object of trackId: 'true/false'
+    for (const idKey in inLibrary) {
+      // use inLibrary[idKey] get the tru/false value
+      // use idKey to get the id of for the track
 
-    console.log(newTrackList);
+      copyOfTrackList.forEach((track, index) => {
+        if (idKey === track.id && inLibrary[idKey] === false) {
+          newSongs.push(track);
+        } else {
+          null;
+        }
+      });
+    }
+    setRecommendations(newSongs);
   };
 
   const getRecommendations = async () => {
@@ -122,10 +137,8 @@ function App() {
     await axios.get(`/recommendations?${urlParams}`).then((res) => {
       allTracks = [...res.data.tracks];
     });
-    // filter through already in library
+    // filter through already in library & return filtered tracklist
     checkAlreadySaved(allTracks);
-
-    // return list of songs not in library
   };
 
   return !accessToken ? (
@@ -178,11 +191,9 @@ function App() {
 
       <Recommendations>
         {/* 
-        
         //todo have the recommendation function take in the checked 
         //todo songs/artist/albums from the top tracks
         */}
-        <TopTitle>Recommendations</TopTitle>
         <button onClick={() => getRecommendations()}>Find new songs</button>
         <Carousel>
           {recommendations &&
