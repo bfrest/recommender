@@ -13,25 +13,21 @@ import { useEffect, useState } from "react";
 import Nav from "./Components/Nav";
 import Track from "./Components/Track";
 import Login from "./Components/Login";
+import Recommender from "./Components/Recommender";
 
 const Main = styled.div`
   font-family: monospace;
   text-align: center;
+  height: 120%;
 `;
 
 const Carousel = styled.div`
   display: flex;
   overflow-x: scroll;
+  margin: 3rem 0;
   scroll-snap-type: x mandatory;
-
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-`;
-
-const Recommendations = styled.div`
-  margin-top: 30vh;
-  text-align: center;
-  padding: 2rem 0;
 `;
 
 const Artists = styled.div`
@@ -94,57 +90,8 @@ function App() {
     fetchData();
   }, []);
 
-  //! this could probably use revision
-  const checkAlreadySaved = async (trackList) => {
-    let idList = [];
-    let copyOfTrackList = [...trackList];
-    let isSaved = [];
-    let inLibrary = {};
-    let newSongs = [];
-    // get all the ids to make single call to see if any items in the list are saved in the users library
-    trackList.map((track) => idList.push(track.id));
-    //makes call to get an array true false values that will match trackList
-    await axios.get(`/me/tracks/contains?ids=${idList}`).then((res) => (isSaved = [...res.data]));
-    // adds the inLibrary key to trackList items
-    idList.forEach((key, i) => (inLibrary[key] = isSaved[i]));
-    // loop through the songs, drop ones that are in users library
-    // object of trackId: 'true/false'
-    for (const idKey in inLibrary) {
-      // use inLibrary[idKey] get the tru/false value
-      // use idKey to get the id of for the track
-
-      copyOfTrackList.forEach((track, index) => {
-        if (idKey === track.id && inLibrary[idKey] === false) {
-          newSongs.push(track);
-        } else {
-          null;
-        }
-      });
-    }
-    setRecommendations(newSongs);
-  };
-
-  const getRecommendations = async () => {
-    let newTracks = [];
-    let allTracks = [];
-    const queryParams = {
-      seed_artists: "7mnBLXK823vNxN3UWB7Gfz",
-      seed_genres: "hip-hop",
-      seed_tracks: "7ctca1Hz43SyMcI4qUrpY7,4Hf2HHwkUEJZzJgp3KDKMu,1KnUt0rICeoLFYPSL40fsU",
-    };
-    // get recommendations with provided seeds
-    const urlParams = new URLSearchParams(queryParams).toString();
-    await axios.get(`/recommendations?${urlParams}`).then((res) => {
-      allTracks = [...res.data.tracks];
-    });
-    // filter through already in library & return filtered tracklist
-    checkAlreadySaved(allTracks);
-  };
-
   return !accessToken ? (
-    <>
-      <Login />
-    </>
+    <Login />
   ) : (
     <Main>
       <Nav user={profile} token={token} />
@@ -188,26 +135,9 @@ function App() {
             />
           ))}
       </Carousel>
-
-      <Recommendations>
-        {/* 
-        //todo have the recommendation function take in the checked 
-        //todo songs/artist/albums from the top tracks
-        */}
-        <button onClick={() => getRecommendations()}>Find new songs</button>
-        <Carousel>
-          {recommendations &&
-            recommendations.map((track) => (
-              <Track
-                key={track.id}
-                artist={track.artists[0].name}
-                name={track.name}
-                preview={track.preview_url}
-                image={track.album.images[0].url}
-              />
-            ))}
-        </Carousel>
-      </Recommendations>
+      <Carousel>
+        <Recommender recommendations={recommendations} setRecommendations={setRecommendations} />
+      </Carousel>
     </Main>
   );
 }
