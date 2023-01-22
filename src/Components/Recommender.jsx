@@ -1,22 +1,7 @@
 import axios from "axios";
-import styled from "styled-components";
 import Track from "./Track";
 
-const Recommendations = styled.div`
-  display: flex;
-  height: 100%;
-  place-content: center;
-  place-items: center;
-
-  button {
-    width: 30%;
-    margin: 30px 0;
-    padding: 20px;
-  }
-`;
-
 const Recommender = (props) => {
-  //
   //! this could probably use revision
   const checkAlreadySaved = async (trackList) => {
     let idList = [];
@@ -66,7 +51,7 @@ const Recommender = (props) => {
   };
 
   return (
-    <Recommendations>
+    <div>
       {/* 
         //todo have the recommendation function take in the checked 
         //todo songs/artist/albums from the top tracks
@@ -83,7 +68,7 @@ const Recommender = (props) => {
             image={track.album.images[0].url}
           />
         ))}
-    </Recommendations>
+    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import "./App.css";
-import axios from "axios";
 import styled from "styled-components";
 import {
   accessToken,
@@ -16,43 +15,57 @@ import Login from "./Components/Login";
 import Recommender from "./Components/Recommender";
 
 const Main = styled.div`
+  /* 
+  
+  colors
+  main blue: #111827
+  accent: #1F2937
+  main teal: #0d9488
+  accent teal: #5eead4
+  tertiarty: #4F46E5
+  off-white: #F3F4F6
+
+*/
+
   font-family: monospace;
   text-align: center;
-  height: 120%;
-`;
-
-const Carousel = styled.div`
-  display: flex;
-  overflow-x: scroll;
-  margin: 3rem 0;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-`;
-
-const Artists = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-around;
-`;
-
-const TopArtist = styled.li`
-  display: flex;
-  flex-direction: column;
-  place-content: center;
-  place-items: center;
-  padding: 20px 0;
+  height: 100vh;
+  width: 100vw;
+  overflow: auto;
+  margin: 0 auto;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #0d9488;
 
   img {
-    width: 100px;
-    height: 100px;
-    border-radius: 10%;
+    height: 200px;
+    width: 200px;
+    border-radius: 5px;
+  }
+
+  button {
+    background-color: #0d9488;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 0 10px;
+
+    :hover {
+      background-color: #5eead4;
+      cursor: pointer;
+    }
   }
 `;
 
-const TopTitle = styled.p`
-  font-size: 1.7rem;
+const Title = styled.p`
+  font-size: 2rem;
   font-weight: 600;
+  text-decoration: underline;
+`;
+
+const TimeLineBtns = styled.div`
+  margin: 50px 0;
 `;
 
 function App() {
@@ -96,33 +109,35 @@ function App() {
     <Main>
       <Nav user={profile} token={token} />
 
-      <TopTitle>Top 5 Artists</TopTitle>
-      <Artists>
+      <Title>Top Artists</Title>
+      <div>
         {topArtists &&
           topArtists.map((artist, index) => (
-            <TopArtist key={artist.id}>
+            <div key={artist.id}>
               <img src={artist.images[0] && artist.images[0].url} />
               <p>{index + 1}</p>
               <p key={artist.id}>{artist.name}</p>
-            </TopArtist>
+            </div>
           ))}
-      </Artists>
+      </div>
 
-      <h2>Your Top Songs</h2>
-      {/* 
-      
+      <Title>Your Top Songs</Title>
+      {/*
+
       //todo make filters to change the timeframe of top songs
       //todo make a popup window with date and times and log to state
-      //todo add a way to check/uncheck each song to be able to base 
+      //todo add a way to check/uncheck each song to be able to base
       //todo recommendations from any of the listed songs, albums or artists
       //todo obviously log to state
-      
+
       */}
-      <p>filters:</p>
-      <button onClick={() => setCurrentTopTracks([...longTrackList])}>{`> year`}</button>
-      <button onClick={() => setCurrentTopTracks([...medTrackList])}>Past 6 months</button>
-      <button onClick={() => setCurrentTopTracks([...shortTrackList])}>Past Past Month</button>
-      <Carousel>
+      <TimeLineBtns>
+        <button onClick={() => setCurrentTopTracks([...longTrackList])}>{`> year`}</button>
+        <button onClick={() => setCurrentTopTracks([...medTrackList])}>Past 6 months</button>
+        <button onClick={() => setCurrentTopTracks([...shortTrackList])}>Past Past Month</button>
+      </TimeLineBtns>
+
+      <div>
         {currentTopTracks &&
           currentTopTracks.map((track, index) => (
             <Track
@@ -134,10 +149,11 @@ function App() {
               number={index + 1}
             />
           ))}
-      </Carousel>
-      <Carousel>
+      </div>
+      <Title>You May Like These...</Title>
+      <div>
         <Recommender recommendations={recommendations} setRecommendations={setRecommendations} />
-      </Carousel>
+      </div>
     </Main>
   );
 }
