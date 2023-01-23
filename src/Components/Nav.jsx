@@ -22,7 +22,7 @@ function Nav(props) {
         <p className="text-purple-200">Music Finder</p>
       </>
       {!props.token ? (
-        <a href="http://localhost:8080/login">
+        <a href="https://music-auth.onrender.com/login">
           <button className="">Log In</button>
         </a>
       ) : (

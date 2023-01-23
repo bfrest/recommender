@@ -29,7 +29,7 @@ const LoginPage = styled.div`
 const Login = () => {
   return (
     <LoginPage>
-      <a href="http://localhost:8080/login">
+      <a href="https://music-auth.onrender.com/login">
         <button>Sign in with spotify</button>
       </a>
     </LoginPage>
